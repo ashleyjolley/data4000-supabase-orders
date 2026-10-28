@@ -32,6 +32,7 @@ Later: Streamlit widget or Django view → the same Python functions → Data AP
 | 04_modify_data.py | Insert, update, delete demonstration |
 | 05_raw_api.py | Optional HTTP request without the client library |
 | app_streamlit.py | Optional local application bridge |
+| ORDER_ENTRY_README.md | Separate setup and testing guide for order_entry.py |
 | exercises.py / solutions.py | Student practice and worked answers |
 | EXPECTED_RESULTS.md | Baseline results for verification |
 | INSTRUCTOR_GUIDE.md | Lesson flow and discussion prompts |
