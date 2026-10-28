@@ -1,0 +1,20 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Streamlit app",
+			"type": "shell",
+			"command": "${workspaceFolder}\\.venv\\Scripts\\streamlit.exe",
+			"args": [
+				"run",
+				"app_streamlit.py",
+				"--server.address",
+				"127.0.0.1",
+				"--server.headless=true",
+				"--browser.gatherUsageStats=false"
+			],
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

@@ -7,7 +7,10 @@ st.caption("Local classroom admin exercise. All records are fictional.")
 products = get_products()
 customers = get_customers()
 st.subheader("Product catalog")
-st.dataframe(products, hide_index=True)
+for product in products:
+    with st.container(border=True):
+        st.markdown(f"**{product['product_name']}**")
+        st.caption(f"{product['category']} · ${product['price']}")
 if not products or not customers:
     st.info("Run 02_import_data.py first.")
     st.stop()
@@ -23,4 +26,16 @@ if submit:
     except Exception:
         st.error("Purchase could not be saved. Check your database configuration and connection.")
 st.subheader("Orders")
-st.dataframe(get_orders(), hide_index=True)
+orders = get_orders()
+if orders:
+    columns = st.columns(4)
+    for column, label in zip(columns, ("Order", "Customer", "Product", "Quantity")):
+        column.markdown(f"**{label}**")
+    for order in orders:
+        columns = st.columns(4)
+        columns[0].write(order["order_id"])
+        columns[1].write((order.get("customers") or {}).get("name", ""))
+        columns[2].write((order.get("products") or {}).get("product_name", ""))
+        columns[3].write(order["quantity"])
+else:
+    st.info("No orders have been recorded yet.")
