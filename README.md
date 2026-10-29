@@ -1,47 +1,93 @@
-# DATA 4000 - Customer Order Entry System
+# DATA 4000 - Campus Store Order Entry
 
-## Description
+This Streamlit application reads fictional customers, products, and orders from
+the course Supabase project. Users can review a current product price, confirm
+an order, and verify the saved record with a separate database query.
 
-This Python program connects to a Supabase database
-to create and verify customer orders.
+## Run locally
 
-The program retrieves customers and products,
-validates user input, calculates order totals,
-saves orders, and verifies successful insertion.
+Use Python 3.11 or newer. From the repository root:
 
-## Requirements
+```powershell
+python -m pip install -r requirements.txt
+Copy-Item env.example .env
+```
 
-- Python 3
-- Supabase database
-- supabase Python library
-- python-dotenv
+Edit `.env` and set your own Supabase URL, Supabase secret key, and a private
+classroom app password. Then start the app:
 
-## Setup
+```powershell
+streamlit run app.py
+```
 
-1. Clone the GitHub repository.
-2. Install dependencies:
+The app password is required before the application makes any database
+requests. Share it only with authorized classmates and the instructor. The
+Supabase secret key is privileged and must never be committed or shared.
 
-   ```powershell
-   python -m pip install -r requirements.txt
+## Deploy to Streamlit Community Cloud
+
+1. Push this repository to GitHub.
+2. In [Streamlit Community Cloud](https://share.streamlit.io/), create an app
+   from this repository, the `main` branch, and `app.py`.
+3. In the app's **Settings → Secrets**, add the following TOML values using
+   your own credentials and a strong classroom password:
+
+   ```toml
+   SUPABASE_URL = "https://your-project.supabase.co"
+   SUPABASE_SECRET_KEY = "sb_secret_your_actual_key"
+   APP_PASSWORD = "replace-with-a-private-classroom-password"
    ```
 
-3. Copy `env.example` to `.env`.
-4. Add your own Supabase URL and secret key to `.env`. Do not share or commit
-   this file; it is excluded from Git.
-5. Run:
+4. Deploy and open the app while authorized. Test the hosted app and record
+   real results below. Do not put credentials, the app password, or
+   unredacted secrets in screenshots or this repository.
 
-   ```powershell
-   python order_entry.py
-   ```
+### Published application
 
-## Testing Results
+- Streamlit app URL: **Pending deployment**
+- GitHub repository: https://github.com/ashleyjolley/data4000-supabase-orders
 
-Test	Expected Behavior
-1. Enter text instead of a customer ID:	Displays a helpful error message and asks again.
-2. Enter a customer ID that does not exist:	Rejects the invalid ID and asks again.
-3. Enter a product ID that does not exist:	Rejects the invalid ID and asks again.
-4. Enter quantity 0, -2, 1.5, or hello:	Rejects each invalid quantity and asks again.
-5. Cancel at the confirmation prompt (N):	Cancels the order without inserting a record into Supabase.
-6. Confirm a valid order (Y):	Successfully inserts exactly one order into Supabase.
-7. Retrieve the newly created order:	Retrieves the saved order from Supabase and displays it in the verification table.
+## Features
 
+- Loads customer, product, and order records from Supabase through its API.
+- Displays product prices as currency and supports refreshing the data.
+- Uses named customer/product choices while retaining their database IDs.
+- Requires a review and explicit confirmation before inserting an order.
+- Checks the current product price again at submission and requires
+  reconfirmation if it changed.
+- Retrieves a newly inserted order by its generated ID for verification.
+- Shows order history and can filter it by customer, totaling stored sale prices.
+- Restricts database access behind a server-checked password gate.
+
+## Testing results
+
+The hosted app has not yet been deployed or tested. Complete this checklist
+after deployment and replace each pending result with the observed result:
+
+| Test | Result |
+|---|---|
+| Open the deployed app with the classroom password | Pending deployment |
+| View customers and products loaded from Supabase | Pending deployment |
+| Enter an invalid quantity | Pending deployment |
+| Submit without confirmation | Pending deployment |
+| Confirm and submit one valid order | Pending deployment |
+| Verify the new order with a fresh query | Pending deployment |
+| Interact with another widget without duplicating the order | Pending deployment |
+| Refresh and find the saved order in history | Pending deployment |
+| Filter history by customer and view the stored-price total | Pending deployment |
+
+Add screenshots of the order-entry interface and a successfully verified
+order after testing the hosted app. Ensure screenshots do not reveal
+credentials or the classroom app password.
+
+## Configuration and dependencies
+
+- `app.py` - Streamlit application.
+- `database.py` - Supabase API helpers, order insertion, and verification query.
+- `config.py` - Local environment and Supabase credential validation.
+- `env.example` - Placeholder-only local configuration template.
+- `requirements.txt` - Packages installed by Streamlit Community Cloud.
+
+The existing Supabase tables must be provisioned with the course schema and
+fictional classroom data. `.env`, `.venv/`, generated Python files, and
+`.streamlit/secrets.toml` are excluded from Git.

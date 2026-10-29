@@ -9,23 +9,36 @@ from config import get_settings
 
 
 @lru_cache(maxsize=1)
-def get_client():
-    url, key = get_settings()
+def get_client(url=None, key=None):
+    if (url is None) != (key is None):
+        raise ValueError("Both Supabase URL and secret key must be provided together.")
+    if url is None:
+        url, key = get_settings()
+    else:
+        url, key = get_settings(url, key)
     return create_client(url, key)
 
 
-def get_products(max_price=None):
-    query = get_client().table("products").select("*")
+def get_products(max_price=None, client=None):
+    query = (client or get_client()).table("products").select("*")
     if max_price is not None:
         query = query.lte("price", float(max_price))
     return query.order("product_id").execute().data
 
 
-def get_customers(city=None):
-    query = get_client().table("customers").select("*")
+def get_customers(city=None, client=None):
+    query = (client or get_client()).table("customers").select("*")
     if city:
         query = query.eq("city", city)
     return query.order("customer_id").execute().data
+
+
+def get_product(product_id, client=None):
+    products = ((client or get_client()).table("products").select("product_id, price")
+                .eq("product_id", int(product_id)).execute().data)
+    if not products:
+        raise ValueError("Product not found.")
+    return products[0]
 
 
 def add_customer(name, email, city):
@@ -48,27 +61,55 @@ def update_product_price(product_id, price):
     return response.data[0]
 
 
-def create_order(customer_id, product_id, quantity):
+class PriceChangedError(ValueError):
+    def __init__(self, current_price):
+        super().__init__("The product price changed. Review and confirm the updated price.")
+        self.current_price = Decimal(str(current_price))
+
+
+def create_order(
+    customer_id, product_id, quantity, expected_unit_price=None, client=None
+):
     if type(quantity) is not int or quantity <= 0:
         raise ValueError("Quantity must be a positive integer.")
-    # Snapshot the price so later catalog changes do not rewrite past revenue.
-    products = (get_client().table("products").select("price")
+    db = client or get_client()
+    customers = (db.table("customers").select("customer_id")
+                 .eq("customer_id", int(customer_id)).execute().data)
+    if not customers:
+        raise ValueError("Customer not found.")
+    # Snapshot the current price so later catalog changes do not rewrite past revenue.
+    products = (db.table("products").select("product_id, price")
                 .eq("product_id", int(product_id)).execute().data)
     if not products:
         raise ValueError("Product not found.")
-    response = get_client().table("orders").insert({
+    unit_price = Decimal(str(products[0]["price"]))
+    if (expected_unit_price is not None
+            and unit_price != Decimal(str(expected_unit_price))):
+        raise PriceChangedError(unit_price)
+    response = db.table("orders").insert({
         "customer_id": int(customer_id), "product_id": int(product_id),
         "quantity": quantity, "order_date": date.today().isoformat(),
-        "unit_price": products[0]["price"]
-    }).execute()
+        "unit_price": str(unit_price)
+    }, returning="representation").execute()
+    if not response.data:
+        raise RuntimeError("The database did not return the inserted order.")
     return response.data[0]
 
 
-def get_orders():
+def get_orders(client=None):
     # Foreign keys let the API embed the related records in one response.
-    return (get_client().table("orders")
+    return ((client or get_client()).table("orders")
             .select("*, customers(name, city), products(product_name)")
-            .order("order_id").execute().data)
+            .order("order_id", desc=True).execute().data)
+
+
+def get_order_by_id(order_id, client=None):
+    orders = ((client or get_client()).table("orders")
+              .select("*, customers(name), products(product_name)")
+              .eq("order_id", int(order_id)).execute().data)
+    if not orders:
+        raise ValueError("The saved order could not be found.")
+    return orders[0]
 
 
 def delete_order(order_id):
