@@ -44,8 +44,12 @@ Supabase secret key is privileged and must never be committed or shared.
 
 ### Published application
 
-- Streamlit app URL: **Pending deployment**
+- Streamlit app URL: https://data4000-supabase-orders-ah4lx9ks8vq2mjurxwbpss.streamlit.app/
 - GitHub repository: https://github.com/ashleyjolley/data4000-supabase-orders
+
+The app is deployed, but access is not yet configured. Add `APP_PASSWORD`,
+`SUPABASE_URL`, and `SUPABASE_SECRET_KEY` in the app's Streamlit Community
+Cloud **Manage app → Settings → Secrets** before using it.
 
 ## Features
 
@@ -61,8 +65,9 @@ Supabase secret key is privileged and must never be committed or shared.
 
 ## Testing results
 
-The hosted app has not yet been deployed or tested. Complete this checklist
-after deployment and replace each pending result with the observed result:
+The hosted app is deployed but still needs its secrets configured and the
+following tests completed. Replace each pending result with the observed
+result after testing:
 
 | Test | Result |
 |---|---|
