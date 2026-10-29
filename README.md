@@ -49,13 +49,3 @@ Record the actual results after testing:
 - Successful insertion:
 - Verification query:
 
-## Screenshots
-
-Include terminal screenshots or copied output
-showing a successful order insertion and verification.
-Do not include credentials or other secrets.
-
-## References
-
-Document any libraries or techniques used
-that were not covered in class.
