@@ -36,16 +36,12 @@ saves orders, and verifies successful insertion.
 
 ## Testing Results
 
-Record the actual results after testing:
-
-- Text instead of customer ID:
-- Nonexistent customer ID:
-- Nonexistent product ID:
-- Quantity of 0:
-- Quantity of -2:
-- Quantity of 1.5:
-- Quantity of hello:
-- Cancelled order:
-- Successful insertion:
-- Verification query:
+Test	Expected Behavior
+1. Enter text instead of a customer ID:	Displays a helpful error message and asks again.
+2. Enter a customer ID that does not exist:	Rejects the invalid ID and asks again.
+3. Enter a product ID that does not exist:	Rejects the invalid ID and asks again.
+4. Enter quantity 0, -2, 1.5, or hello:	Rejects each invalid quantity and asks again.
+5. Cancel at the confirmation prompt (N):	Cancels the order without inserting a record into Supabase.
+6. Confirm a valid order (Y):	Successfully inserts exactly one order into Supabase.
+7. Retrieve the newly created order:	Retrieves the saved order from Supabase and displays it in the verification table.
 
